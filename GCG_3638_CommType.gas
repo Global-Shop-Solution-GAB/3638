@@ -1,0 +1,118 @@
+Program.Sub.ScreenSU.Start
+Program.Sub.ScreenSU.End
+
+Program.Sub.Preflight.Start
+
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'RAN 03-11-16
+'Quote 7579: Custom Comm Type Browser in Quick Quotes
+
+F.Intrinsic.Control.SetErrorHandler("Main_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+F.Intrinsic.Control.if(V.Caller.Hook,=,"10710")
+	F.Intrinsic.Control.CallSub(Ctl_visible)
+F.Intrinsic.Control.endif
+
+F.Intrinsic.Control.if(V.Caller.Hook,=,"10987")
+	F.Intrinsic.Control.CallSub(Browse_comm)
+F.Intrinsic.Control.endif
+	
+'F.Intrinsic.Control.End
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Main_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3638_CommType.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Main.End
+
+Program.Sub.Browse_Comm.Start
+F.Intrinsic.Control.SetErrorHandler("Browse_Comm_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+'F.Intrinsic.Debug.InvokeDebugger
+'F.Intrinsic.Debug.Stop
+
+V.Local.sSql.Declare(String)
+V.Local.sTitles.Declare(String)
+V.Local.sWidths.Declare(String)
+V.Local.sRet.Declare(String)
+
+
+V.Local.sSql.Set("select salesperson,product_line,commission_type,alternate_sm1 from V_COMMISSION_RATE order by salesperson,product_line,commission_type")
+
+'Browser for select Record from table
+F.ODBC.Connection!conx.OpenConnection(V.Ambient.PDSN,V.Ambient.PUser,V.Ambient.PPass)
+F.Intrinsic.String.Split("Salesman*!*PL*!*Type*!*Alt Salesman","*!*",V.Local.sTitles)
+'F.Intrinsic.String.Split("1800*!*800*!*500*!*1800","*!*",V.Local.iWidths)
+V.Local.sWidths.Set("1800*!*400*!*500*!*1800")
+F.Intrinsic.UI.SetBrowserHotTypeAhead(True)
+'F.Intrinsic.UI.MiniBrowser("Select Commission Type",conx,V.Local.sSql,V.Local.sTitles,V.Local.iWidths,V.Local.sRet)
+F.Intrinsic.UI.Browser("Select Commission Type","conx",V.Local.sSql,V.Local.sTitles,V.Local.sWidths,V.Local.sRet)
+'F.ODBC.Connection!conx.Close
+F.Intrinsic.Control.If(V.Local.sRet,"=","***CANCEL***")
+	F.Intrinsic.UI.Msgbox("No Commission Typewas selected")
+F.Intrinsic.Control.Else
+	F.Intrinsic.String.Split(V.Local.sRet,"*!*",V.Local.sRet)
+	V.passed.000041.set(V.Local.sRet(2))
+F.Intrinsic.Control.EndIf
+
+F.ODBC.Connection!conx.Close
+
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Browse_Comm_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3638_CommType.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Browse_Comm.End
+
+Program.Sub.Ctl_Visible.Start
+F.Intrinsic.Control.SetErrorHandler("Ctl_Visible_Err")
+F.Intrinsic.Control.ClearErrors
+
+V.Local.sError.Declare(String)
+
+
+V.passed.GAB-BTN-1.set("^")
+
+F.Intrinsic.Variable.SetProperty("GAB-BTN-1","PL",403)
+F.Intrinsic.Variable.SetProperty("GAB-BTN-1","PT",439)
+
+F.Intrinsic.UI.ChangeCallerProperty(V.Passed.GAB-BTN-1,"HIDE",0)
+F.Intrinsic.UI.ChangeCallerProperty(V.Passed.GAB-BTN-1,"LOCK",0)
+
+F.Intrinsic.Variable.SetProperty("V.Passed.GAB-BTN-1","PH",18)
+F.Intrinsic.Variable.SetProperty("V.Passed.GAB-BTN-1","PW",25)
+
+F.Intrinsic.Control.ExitSub
+
+F.Intrinsic.Control.Label("Ctl_Visible_Err")
+F.Intrinsic.Control.If(V.Ambient.ErrorNumber,<>,0)
+	Function.Intrinsic.String.Concat("Project: GCG_3638_CommType.gas",V.Ambient.Newline,V.Ambient.Newline,"Subroutine: ",V.Ambient.CurrentSubroutine,V.Ambient.NewLine,"Error Occurred ",V.Ambient.ErrorNumber," with description ",V.Ambient.ErrorDescription,V.Local.sError)
+	F.Intrinsic.UI.Msgbox(V.Local.sError)
+Function.Intrinsic.Control.EndIf
+
+
+Program.Sub.Ctl_Visible.End
+
+Program.Sub.Comments.Start
+${$0$}$GCG_CommType$}$RAN$}$3/11/2016
+Program.Sub.Comments.End
+
